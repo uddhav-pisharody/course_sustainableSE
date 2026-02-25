@@ -5,47 +5,70 @@ title: "Energy Consumption of YouTube Short-Form Video Playback: Auto vs HD720 o
 image: "img/gX_template/project_cover.png"
 date: 27/02/2026
 summary: |-
-  We investigate the energy consumption of short-form video playback on YouTube under controlled conditions. Specifically, we analyze how browser choice (Google Chrome vs Mozilla Firefox) and video quality settings (automatic quality selection vs forced 720p playback) affect energy usage. Using the same YouTube Short video across all experiments, we construct a 2×2 experimental design consisting of Chrome–Auto, Chrome–HD720, Firefox–Auto, and Firefox–HD720 configurations. Energy consumption is measured using EnergiBridge at the CPU package level while automating video playback via Playwright. Each configuration is executed 30 times in randomized order to mitigate system noise. Our goal is to assess whether video quality and browser implementation differences lead to measurable differences in energy consumption and efficiency during short-form video playback.
+  We investigate the energy consumption of short-form video playback on YouTube under controlled conditions. Specifically, we analyze how browser choice (Google Chrome vs Mozilla Firefox) and video quality settings (automatic quality selection vs forced 720p playback) affect energy usage. Using the same YouTube Short video across all experiments, we construct a 2×2 experimental design consisting of Chrome–Auto, Chrome–HD720, Firefox–Auto, and Firefox–HD720 configurations. Energy consumption is measured using EnergiBridge at the CPU package level while automating video playback via Playwright. Each configuration is executed 30 times in randomized order to mitigate system noise. Our goal is to assess whether differences in video quality and browser implementations lead to measurable differences in energy consumption and efficiency during short-form video playback.
 identifier: p1_measuring_software_2026 # Do not change this
 all_projects_page: "../p1_measuring_software" # Do not change this
 ---
 
-Body lorem ipsum dolor sit amet, consectetur adipisicing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.
+## Introduction
+Video streaming has completely changed how we spend our time online. However, when it comes to streaming, YouTube is still the number one most used website[^1]. According to YouTube's CEO[^2], people have watched over 1 billion hours of YouTube on their TVs every day. Because of this, the platform's energy use really adds up.
 
-This problem takes another level if we are counting on these measurements to make **groundbreaking research contributions** in this area. Some research projects in the past have underestimated this issue and failed to produce replicable findings. Hence, this article presents a roadmap on how to properly set up a scientific methodology to run energy efficiency experiments. It mostly stems from my previous work on [doing research and publishing](/publications) on Green Software.
+In this study, we measured the energy and power consumption of streaming YouTube videos under four conditions:
+1. **Google Chrome** on Auto Quality
+2. **Google Chrome** on 720p HD Quality
+3. **Mozilla Firefox** on Auto Quality
+4. **Mozilla Firefox** on 720p HD Quality
 
+The goal of this report is to determine how video quality and browser choice affect energy consumption.
 
-This article is divided into two main parts: 1) how to set up energy measurements with minimum bias, and 2) how to analyse and take scientific conclusions from your energy measurements.
-Read on so that we can get your paper accepted in the best scientific conference.
+## Methodology
 
---- 
-#### 👉 Note 1:
-If you are a **software developer** enthusiastic about energy efficiency but you are not particularly interested in scientific experiments, this article is still useful for you. It is not necessary to do "everything by the book" but you may use one or two of these techniques to reduce the likelihood of making wrong decisions regarding the energy efficiency of your software.
+To ensure accurate and reproducible results, we automated our testing pipeline using a custom Bash script. All experiments were conducted on a Linux machine with an AMD Ryzen 7 4000-series processor. 
 
---- 
+We used **Energibridge** to measure the raw energy and power consumption during the video playback, exporting the telemetry data into CSV files for analysis. Our automated pipeline read from a pre-generated execution plan and used a Python script (`play_video.py`) to launch the specified browser, navigate to the YouTube URL, and set the target video quality.
 
-## Unbiased Energy Data ⚖️
+**CONTINUE METHODOLOGY** Talk about ZEN and how we changed settings so the screen doesn't change, etc.
 
-There are a few things that need to be considered to minimise the bias of the energy measurements. Below, I pinpoint the most important strategies to minimise the impact of these biases when collecting the data.
+## Results
 
-### Zen mode 🧘🏾‍♀️
+The most important thing we found is that browser choice matters much more than video quality. Even when lowering the resolution, using the wrong browser can still waste significant energy.
 
-The first thing we need to make sure of is that the only thing running in our system is the software we want to measure. Unfortunately, this is impossible in practice – our system will always have other tasks and things that it will run at the same time. Still, we must at least minimise all these competing tasks:
+### Energy Comparison
+The tests showed that Firefox is much more efficient than Chrome. 
 
-- all applications should be closed, notifications should be turned off;
-- only the required hardware should be connected (avoid USB drives, external disks, external displays, etc.);
-- turn off notifications;
-- remove any unnecessary services running in the background (e.g., web server, file sharing, etc.);
-- if you do not need an internet or intranet connection, switch off your network;
-- prefer cable over wireless – the energy consumption from a cable connection is more stable than from a wireless connection.
+![Energy Consumption Comparison](img/g28_yt_quality_browser_comparison/01_energy_comparison.png)
 
-### Freeze your settings 🥶
+As seen in the chart above, here is the average energy used for each:
 
-It is not possible to shut off the unnecessary things that run in our system. Still, we need to at least make sure that they will behave the same across all sets of experiments. Thus, we must fix and report some configuration settings. One good example is the brightness and resolution of your screen – report the exact value and make sure it stays the same throughout the experiment. Another common mistake is to keep the automatic brightness adjustment on – this is, for example, an awful source of errors when measuring energy efficiency in mobile apps.
+* **Firefox:** about **505 Joules** (Auto) and **513.6 Joules** (720p).
+* **Chrome:** about **642.1 Joules** (Auto) and **688.5 Joules** (720p).
+
+While switching to 720p HD did use more power in both browsers, the difference was small. The real "energy penalty" comes from using Chrome instead of Firefox.
 
 ---
 
-### 
+### Steady Power vs. Spikes
+We also looked at how steady the power usage was for each browser. 
 
-Nevertheless, using statistical metrics to measure effect size is not enough – there should be a discussion of the **practical effect size**. More important than demonstrating that we came up with a new version that is more energy efficient, you need to demonstrate that the benefits will actually be reflected in the overall energy efficiency of normal usage of the software. For example, imagine that the results show that a given energy improvement was only able to save one joule of energy throughout a whole day of intensive usage of your cloud software. This perspective can hardly be captured by classic effect-size measures. The statistical approach to effect size (e.g., mean difference, Cohen's-*d*, and so on) is agnostic of the context of the problem at hand.
+![Violin Plots for Energy and Power](img/g28_yt_quality_browser_comparison/04_violins.png)
 
+The plots show that Chrome's power usage fluctuates widely, ranging from **20W to 26W**. Firefox is much more stable and stays mostly around **14W to 15W**.
+
+By looking at power usage over time, we found out why Chrome uses more power. 
+
+![Power Time Series](img/g28_yt_quality_browser_comparison/03_time_series.png)
+
+Right when a video starts, Chrome has huge power spikes. It jumps up to **45 or 50 Watts** in the first 10 seconds. Firefox is much smoother and rarely goes above **30 Watts**. It seems like Chrome tries to load everything as fast as possible, but that uses a lot of extra electricity.
+
+---
+
+### Is Speed Worth the Extra Energy?
+There is a small trade-off for Firefox being greener. Because Chrome uses so much power, it finishes loading the video tasks faster.
+
+![Time and Efficiency](img/g28_yt_quality_browser_comparison/08_time_efficiency.png)
+
+Chrome finished the tests in roughly **31 to 32 seconds**, while Firefox took about **34 to 35 seconds**. Even though Firefox takes a few seconds longer, it draws less power. Firefox uses about **11 Joules per second**, while Chrome uses **16 to 17 Joules per second**. In the end, Firefox is the clear winner for saving your battery and the environment.
+
+### Sources
+[^1]: [Cloudflare Radar 2025 Year in Review](https://radar.cloudflare.com/year-in-review/2025)
+[^2]: [YouTube CEO 2025 Priorities: Our Big Bets](https://blog.youtube/inside-youtube/our-big-bets-for-2025/)
