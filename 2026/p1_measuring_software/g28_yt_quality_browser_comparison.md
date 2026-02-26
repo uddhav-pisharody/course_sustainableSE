@@ -67,13 +67,48 @@ Right when a video starts, Chrome has huge power spikes. It jumps above *15 Watt
 
 ---
 
-### Is Speed Worth the Extra Energy?
+### Consistency and speed
 We compared how much energy was used versus how long the video task took to finish.
 
 <img src="img/g28_yt_quality_browser_comparison/energy_vs_duration.png" alt="Time and Efficiency" width="1500"/>
 
 This scatter plot shows exactly why Chrome is better. The blue and orange dots for Chrome are tightly grouped together. Chrome finishes the video loading task in a very consistent **32 to 33 seconds**. 
 The green and red dots for Firefox are scattered all over the place. Firefox can take anywhere from **30 seconds to 38 seconds** to finish the same exact task
+### Overall Efficiency (EDP)
+To get a final score for each browser, we used a metric called the Energy-Delay Product (EDP). This formula multiplies the energy used by the time taken to see which browser has the best balance of speed and battery life.
+
+<img src="img/g28_yt_quality_browser_comparison/edp2_violin.png" alt="EDP2 by Configuration" width="1500"/>
+
+Just like the other tests, Chrome proves to be incredibly reliable. Its EDP score stays tightly clustered around **375,000** for Auto quality and **410,000** for HD. Firefox is completely unstable, with its HD score swinging all the way up past **600,000**. Because Chrome avoids these massive penalties and stays predictable, it is the clear winner for a smooth and battery-friendly streaming experience.
+
+### 4.5 Statistical Significance
+To make sure our findings were true and not just random luck, we used the `scipy.stats` library in Python to test the math. First, we ran a Shapiro-Wilk test to see if the energy data was normally distributed like a bell curve:
+
+```python
+from scipy.stats import shapiro, mannwhitneyu
+
+# Check for normal distribution
+for (browser, quality), grp in data.groupby(['browser', 'quality']):
+    p_value = shapiro(grp['energy_j']).pvalue
+    print(f"{browser} {quality} Shapiro p={p_value:.3f}")
+```
+
+The output revealed that Chrome's data was normal, but Firefox's data was not (`p = 0.000` and `p = 0.001`). Because Firefox's scores were too erratic to be normal, we used the non-parametric Mann-Whitney U test to safely compare the two browsers.
+
+```python
+# Mann-Whitney U Test: Chrome vs Firefox on HD720
+chrome_hd = data[(data.quality == "hd720") & (data.browser == "chrome")]['energy_j']
+firefox_hd = data[(data.quality == "hd720") & (data.browser == "firefox")]['energy_j']
+
+stat, p = mannwhitneyu(chrome_hd, firefox_hd, alternative="two-sided")
+print(f"HD720 Mann-Whitney p={p:.4g}")
+```
+
+The tests proved three main points:
+1. **Quality Matters:** When comparing all Auto runs to all 720p runs, the test gave a microscopic p-value (`p = 4.4 x 10^-11`). This proves that forcing the video to HD definitively changes the energy used.
+2. **Browsers Differ on HD:** When watching in 720p, the difference between Chrome and Firefox is statistically significant (`p = 0.03147`). 
+3. **Auto is Too Unpredictable:** On Auto quality, the difference was not statistically significant (`p = 0.137`). Firefox's results were so wild and scattered that the math could not prove a clear difference between the two browsers on this specific setting.
+
 ### Sources
 [^1]: [Cloudflare Radar 2025 Year in Review](https://radar.cloudflare.com/year-in-review/2025)
 [^2]: [YouTube CEO 2025 Priorities: Our Big Bets](https://blog.youtube/inside-youtube/our-big-bets-for-2025/)
