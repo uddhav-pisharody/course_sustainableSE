@@ -11,15 +11,16 @@ all_projects_page: "../p1_measuring_software" # Do not change this
 ---
 
 ## Introduction
-Video streaming has completely changed how we spend our time online. However, when it comes to streaming, YouTube is still the number one most used website[^1]. According to YouTube's CEO[^2], people have watched over 1 billion hours of YouTube on their TVs every day. Because of this, the platform's energy use really adds up.
 
-In this study, we measured the energy and power consumption of streaming YouTube videos under four conditions:
-1. **Google Chrome** on Auto Quality
-2. **Google Chrome** on 720p HD Quality
-3. **Mozilla Firefox** on Auto Quality
-4. **Mozilla Firefox** on 720p HD Quality
+Nowadays, video streaming has become one of the most frequently used services on the internet, accounting for a significant portion of the internet traffic and mobile device usage. According to YouTube's CEO, YouTube is still the most widely used streaming platform with users watching a total of over 1 billion hours of content every day [^2]. While this huge usage rate highlights the platform's importance in the modern internet world, people pay little attention to the amount of energy being used by video streaming.
 
-The goal of this report is to determine how video quality and browser choice affect energy consumption.
+The amount of energy that is being consumed by software systems is not only influenced by hardware selection, but also by software design choices and personal user settings. When speaking of video streaming on the web, power usage is being affected by factors such as browser engine implementations, hardware acceleration, and video quality selection. Users are predominantly unaware of these differences and select their browser and settings based on convenience, rather than power usage.
+
+This study attempts to give better insight into how browser selection and video quality settings affect energy consumption in YouTube video streaming. For this purpose, we investigate two of the most widely used browsers - **Google Chrome** and **Mozilla Firefox** - under two video quality settings - **Auto** quality and fixed **720p HD** - while using the same YouTube video for each configuration. By conducting an automated experiment and making precise energy consumption measurements, we aim to answer the following research question: 
+
+- *How do video quality and browser choice affect energy consumption in video streaming?*
+
+The remainder of this report is structured as follows. We begin by giving some background to the challenges of video streaming implementations and how some streaming platforms approach them. Then, we present the methodology used for our experiments, followed by the results and analysis. Finally, the report ends with a conclusion.
 
 ## Background
 
