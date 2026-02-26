@@ -34,7 +34,7 @@ The choice of browser is also very important; Chrome and Firefox might look simi
 
 ## Methodology
 
-To ensure accurate and reproducible results, we automated our testing pipeline using a custom Bash script. All experiments were conducted on a Linux machine with an AMD Ryzen 7 4000-series processor. 
+To ensure accurate and reproducible results, we automated our testing pipeline using a custom Bash script. All experiments were conducted on a Linux machine with an **[PLEASE ADD PROCESSOR AND PC INFORMATION HERE]**. 
 
 We used **Energibridge** to measure the raw energy and power consumption during the video playback, exporting the telemetry data into CSV files for analysis. Our automated pipeline read from a pre-generated execution plan and used a Python script (`play_video.py`) to launch the specified browser, navigate to the YouTube URL, and set the target video quality.
 
@@ -47,39 +47,33 @@ The most important thing we found is that browser choice matters much more than 
 ### Energy Comparison
 The tests showed that Firefox is much more efficient than Chrome. 
 
-![Energy Consumption Comparison](img/g28_yt_quality_browser_comparison/01_energy_comparison.png)
+<img src="img/g28_yt_quality_browser_comparison/energy_violin.png" alt="Energy Consumption Comparison" width="1500"/>
 
-As seen in the chart above, here is the average energy used for each:
+As shown in the chart above, Chrome's energy use is very tightly packed. 
+* **Chrome** consistently uses about **360 Joules** on Auto and **375 Joules** on 720p. 
+* **Firefox** is highly unpredictable. Its energy use swings wildly from as low as **280 Joules** to over **415 Joules**.
 
-* **Firefox:** about **505 Joules** (Auto) and **513.6 Joules** (720p).
-* **Chrome:** about **642.1 Joules** (Auto) and **688.5 Joules** (720p).
-
-While switching to 720p HD did use more power in both browsers, the difference was small. The real "energy penalty" comes from using Chrome instead of Firefox.
+While switching to 720p HD, both browsers used more power, but the difference was small. While Firefox was highly unpredictable.
 
 ---
 
 ### Steady Power vs. Spikes
-We also looked at how steady the power usage was for each browser. 
 
-![Violin Plots for Energy and Power](img/g28_yt_quality_browser_comparison/04_violins.png)
+By looking at power usage over time, we found out why Firefox uses more power. 
 
-The plots show that Chrome's power usage fluctuates widely, ranging from **20W to 26W**. Firefox is much more stable and stays mostly around **14W to 15W**.
+<img src="img/g28_yt_quality_browser_comparison/power_over_time.png" alt="Power Time Series" width="1500"/>
 
-By looking at power usage over time, we found out why Chrome uses more power. 
-
-![Power Time Series](img/g28_yt_quality_browser_comparison/03_time_series.png)
-
-Right when a video starts, Chrome has huge power spikes. It jumps up to **45 or 50 Watts** in the first 10 seconds. Firefox is much smoother and rarely goes above **30 Watts**. It seems like Chrome tries to load everything as fast as possible, but that uses a lot of extra electricity.
+Right when a video starts, Chrome has huge power spikes. It jumps above *15 Watts** in the first 10 seconds. Firefox is much smoother and rarely goes above **15 Watts**. However Firefox remains around this power level while chrome loads everything with a burst and than reduces to lower levels of power consumption afterwards.
 
 ---
 
 ### Is Speed Worth the Extra Energy?
-There is a small trade-off for Firefox being greener. Because Chrome uses so much power, it finishes loading the video tasks faster.
+We compared how much energy was used versus how long the video task took to finish.
 
-![Time and Efficiency](img/g28_yt_quality_browser_comparison/08_time_efficiency.png)
+<img src="img/g28_yt_quality_browser_comparison/energy_vs_duration.png" alt="Time and Efficiency" width="1500"/>
 
-Chrome finished the tests in roughly **31 to 32 seconds**, while Firefox took about **34 to 35 seconds**. Even though Firefox takes a few seconds longer, it draws less power. Firefox uses about **11 Joules per second**, while Chrome uses **16 to 17 Joules per second**. In the end, Firefox is the clear winner for saving your battery and the environment.
-
+This scatter plot shows exactly why Chrome is better. The blue and orange dots for Chrome are tightly grouped together. Chrome finishes the video loading task in a very consistent **32 to 33 seconds**. 
+The green and red dots for Firefox are scattered all over the place. Firefox can take anywhere from **30 seconds to 38 seconds** to finish the same exact task
 ### Sources
 [^1]: [Cloudflare Radar 2025 Year in Review](https://radar.cloudflare.com/year-in-review/2025)
 [^2]: [YouTube CEO 2025 Priorities: Our Big Bets](https://blog.youtube/inside-youtube/our-big-bets-for-2025/)
